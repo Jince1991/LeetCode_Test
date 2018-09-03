@@ -7,7 +7,7 @@ namespace LeetCodeTest
     {
         static void Main(string[] args)
         {
-            ISolution solution = new IsPalindrome();
+            ISolution solution = new FindKthLargest();
             solution.Test();
         }
     }
@@ -308,6 +308,124 @@ namespace LeetCodeTest
         public void Test()
         {
             Console.WriteLine(Solution(12321));
+            Console.ReadLine();
+        }
+    }
+    #endregion
+
+    #region 最长公共前缀
+    /// <summary>
+    /// https://leetcode-cn.com/problems/longest-common-prefix/description/
+    /// 2018.8.31
+    /// </summary>
+    public class LongestCommonPrefix : ISolution
+    {
+        private string Solution(string[] strs)
+        {
+            if (strs == null || strs.Length == 0)
+                return "";
+            if (strs[0] == null || strs[0].Length == 0)
+                return "";
+            if (strs.Length == 1)
+                return strs[0];
+            string pre = "";
+            char current = strs[0][0];
+            int j = 0;
+            while (j < strs[0].Length)
+            {
+                current = strs[0][j];
+                for (int i = 1; i < strs.Length; ++i)
+                {
+                    if (strs[i] == null || j >= strs[i].Length)
+                        return pre;
+                    if (strs[i][j] != current)
+                        return pre;
+                    if (i == strs.Length - 1)
+                        pre += current.ToString();
+                }
+                ++j;
+            }
+            return pre;
+        }
+
+        public void Test()
+        {
+            //string[] strs = new string[3] { "flower","flow","flight" };
+            //string[] strs = new string[1] { "a" };
+            string[] strs = new string[2] { "aca", "cba" };
+            Console.WriteLine(Solution(strs));
+            Console.ReadLine();
+        }
+    }
+    #endregion
+
+    #region 数组中的第K个最大元素
+    /// <summary>
+    /// https://leetcode-cn.com/problems/kth-largest-element-in-an-array/description/
+    /// 2018.9.3
+    /// </summary>
+    public class FindKthLargest : ISolution
+    {
+        //冒泡
+        private int Solution1(int[] nums, int k)
+        {
+            if (nums == null || nums.Length == 0)
+                throw new Exception("Array error");
+            for (int i = 0; i < k; ++i)
+            {
+                for (int j = i + 1; j < nums.Length; ++j)
+                {
+                    if (nums[i] < nums[j])
+                    {
+                        int temp = nums[i];
+                        nums[i] = nums[j];
+                        nums[j] = temp;
+                    }
+                }
+            }
+            return nums[k - 1];
+        }
+        
+        //快排
+        private int Solution2(int[] nums, int k)
+        {
+            if (nums == null || nums.Length == 0)
+                throw new Exception("Array error");
+
+            return QucikSort(nums, 0, nums.Length - 1, k - 1);
+        }
+
+        private int Separate(int[] nums, int min, int max)
+        {
+            int temp = nums[min];
+            while (min < max)
+            {
+                while (min < max && nums[max] <= temp)
+                    --max;
+                nums[min] = nums[max];
+                while (min < max && nums[min] >= temp)
+                    ++min;
+                nums[max] = nums[min];
+            }
+            nums[min] = temp;
+            return min;
+        }
+
+        private int QucikSort(int[] nums, int left, int right, int k)
+        {
+            int middle = Separate(nums, left, right);
+            if (middle > k)
+                return QucikSort(nums, left, middle, k);
+            else if (middle < k)
+                return QucikSort(nums, middle + 1, right, k);
+            else
+                return nums[k];
+        }
+
+        public void Test()
+        {
+            int[] nums = new int[6] { 3, 2, 1, 5, 6, 4 };
+            Console.WriteLine(Solution2(nums, 2));
             Console.ReadLine();
         }
     }
